@@ -1,12 +1,12 @@
 # DiagHub
 
-A business application to enable tracking of sub-contractors in the field, job management and allocation. The DiagHub utilises an underlying AI to provide the most appropriate route to drivers to ensure both them and their cargo remains safe, using heuristics to provide a quality rating for each path.
+An operations focused application to enable tracking of sub-contractors in the field, job management and allocation. The DiagHub utilises an underlying AI to provide the most appropriate route to the drivers client application to ensure both them and their cargo remains safe, using heuristics to provide a quality rating for each path.
 
 ## Requirements
 * Python 3 - https://www.python.org/downloads/
 * Python pip (may be included with your python installation)
 * Optional - Virtual Environment (Installation instructions provided in "Starting the app")
-###### Dependencies are location in requirements.txt, I suggest using Virtual Environment to install and manage these
+###### Dependencies are located in requirements.txt, I suggest using Virtual Environment to install and manage these
 
 ## Starting the app
 Download the project, right click and extract from the archive, navigate to the project directory, (../DiagHub/), in terminal/command prompt, and execute the following:
