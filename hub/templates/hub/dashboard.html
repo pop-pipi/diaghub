@@ -1,0 +1,260 @@
+{% extends 'hub/base.html' %}
+{% load static %}
+
+{% block main %}
+<div id="map" class="map-container">
+    <script>
+        function initMap() {
+            directionsService = new google.maps.DirectionsService();
+            directionsDisplay = new google.maps.DirectionsRenderer();
+            markers = [];
+            drivers = [];
+            styledMapType = new google.maps.StyledMapType(
+                [
+                    {
+                        "elementType": "geometry.fill",
+                        "stylers": [
+                        {
+                            "color": "#ffffff"
+                        }
+                        ]
+                    },
+                    {
+                        "elementType": "geometry.stroke",
+                        "stylers": [
+                        {
+                            "color": "#d3d3d3"
+                        }
+                        ]
+                    },
+                    {
+                        "elementType": "labels.icon",
+                        "stylers": [
+                        {
+                            "color": "#7c8b8b"
+                        },
+                        {
+                            "lightness": 15
+                        }
+                        ]
+                    },
+                    {
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                        {
+                            "color": "#555555"
+                        }
+                        ]
+                    },
+                    {
+                        "featureType": "landscape.natural",
+                        "elementType": "geometry.fill",
+                        "stylers": [
+                        {
+                            "color": "#ebebeb"
+                        }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway",
+                        "elementType": "geometry.fill",
+                        "stylers": [
+                        {
+                            "color": "#9d9d9d"
+                        }
+                        ]
+                    },
+                    {
+                        "featureType": "road.local",
+                        "elementType": "geometry.fill",
+                        "stylers": [
+                        {
+                            "color": "#ffffff"
+                        }
+                        ]
+                    },
+                    {
+                        "featureType": "water",
+                        "elementType": "geometry.fill",
+                        "stylers": [
+                        {
+                            "color": "#B1D2F8"
+                        }
+                        ]
+                    }
+                ],
+                {name: 'Styled Map'}
+            );
+
+            map = new google.maps.Map(document.getElementById('map'), {
+                mapTypeControl: false
+            });
+
+            directionsDisplay.setMap(map);
+
+            //create empty LatLngBounds object
+            map_bounds = new google.maps.LatLngBounds();
+            map_infowindow = new google.maps.InfoWindow();
+        }
+
+        function addMarkers(){
+            //get driver locations and push to js array
+            {% for driver in drivers %}
+            drivers.push([{{ driver.lat }},{{ driver.lng }},{{ driver.id }}]);
+            {% endfor %}
+
+            var icon = {
+                url: "{% static 'hub/truck_icon.png' %}",
+                scaledSize: new google.maps.Size(50, 50),
+                origin: new google.maps.Point(0,0),
+                anchor: new google.maps.Point(25, 50)
+            };
+
+            for (i = 0; i < drivers.length; i++) {  
+                var marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(drivers[i][0], drivers[i][1]),
+                    map: map,
+                    icon: icon,
+                    duration: 1000
+                });
+                updateLocation(i+1);
+
+                markers.push(marker);
+
+                //extend the bounds to include each marker's position
+                map_bounds.extend(marker.position);
+
+                google.maps.event.addListener(marker, 'click', (function(marker, i) {
+                    var description = "Driver ID: ".concat(drivers[i][2])
+                    return function() {
+                        map_infowindow.setContent(description);
+                        map_infowindow.open(map, marker);
+                    }
+                })(marker, i));
+            }
+
+            //now fit the map to the newly inclusive bounds
+            map.fitBounds(map_bounds);
+            map.mapTypes.set('styled_map', styledMapType);
+            map.setMapTypeId('styled_map');
+        }
+
+        function showRoute(job_id) {
+            var url = "http://127.0.0.1:8000/api/jobs/?id="+job_id;
+
+            fetch(url, {
+                method: 'GET',
+                mode: 'no-cors',
+                headers:{
+                    'Content-Type': 'application/json',
+                    "Accept": 'application/json',
+                }
+            })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                var jsondata = data['results'][0];
+                var driver_id = Number(jsondata['driver'].slice(-2).charAt(0));
+                var start = new google.maps.LatLng(markers[driver_id-1].getPosition().lat(), markers[driver_id-1].getPosition().lng());
+                var end = new google.maps.LatLng(jsondata['end_lat'], jsondata['end_lng']);
+                var request = {
+                origin: start,
+                destination: end,
+                travelMode: 'DRIVING'
+                };
+                directionsService.route(request, function(result, status) {
+                if (status == 'OK') {
+                    directionsDisplay.setDirections(result);
+                }
+                });
+            })
+            .catch(function (err) {
+                console.log(err);
+            })
+        }
+
+        function updateLocation(driver_id) {
+            var url = "http://127.0.0.1:8000/api/demo-location-update/"+driver_id;
+
+            fetch(url, {
+                method: 'GET',
+                mode: 'no-cors',
+                headers:{
+                    'Content-Type': 'application/json',
+                    "Accept": 'application/json',
+                }
+            })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                markers[driver_id-1].setPosition(new google.maps.LatLng(data['lat'], data['lng']));
+            })
+            .catch(function (err) {
+                console.log(err);
+            })
+        }
+        
+        function displayTripData(data, driver_id){
+            document.getElementById("active-display-data").innerHTML = data['lat'];
+        }
+    </script>
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDi35R0_kTAK-ENbDWN23sIYluArooLmDQ&callback=initMap">
+    </script>
+
+</div>
+
+<div class="container">
+    <div class="row">
+        <div id="active-jobs" class="col-6">
+            <p class="h6">ACTIVE JOBS</p>
+            <div class="line no-margin"></div>
+
+            <table id="active-jobs-table" class="table table-striped table-bordered table-sm">
+                <thead>
+                    <tr>
+                        <th>Job ID</th>
+                        <th>Driver ID</th>
+                        <th>Status</th>
+                        <th>ETA</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in jobs %}
+                    <tr>
+                        <td><a href="{{ job.id }}"></a>{{ job.id }}</td>
+                        <td>{{ job.driver_id }}</td>
+                        <td>{{ job.status }}</td>
+                        <td>{{ job.eTA }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div id="active-display" class="col-6">
+            <p id="active-display-data"></p>
+            <!--Placeholder text-->
+            <h2>Dashboard</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+            <div class="line"></div>
+
+            <h2>Lorem Ipsum Dolor</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+            <div class="line"></div>
+
+            <h2>Lorem Ipsum Dolor</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+            <div class="line"></div>
+
+            <h3>Lorem Ipsum Dolor</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        </div>
+    </div>
+</div>  
+{% endblock %}
