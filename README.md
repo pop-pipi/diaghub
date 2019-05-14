@@ -6,6 +6,7 @@ A business application to enable tracking of sub-contractors in the field, job m
 * Python 3 - https://www.python.org/downloads/
 * Python pip (may be included with your python installation)
 * Optional - Virtual Environment (Installation instructions provided in "Starting the app")
+###### Dependencies are location in requirements.txt, I suggest using Virtual Environment to install and manage these
 
 ## Starting the app
 Download the project, right click and extract from the archive, navigate to the project directory, (../DiagHub/), in terminal/command prompt, and execute the following:
