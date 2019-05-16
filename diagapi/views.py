@@ -68,6 +68,14 @@ class DemoLocationUpdateView(APIView):
         serializer_class.is_valid(True)
         return Response(data=serializer_class.data)
 
+class IOTLocationUpdateView(APIView):
+    def get(self, request):
+        """
+        API endpoint that returns updated IOT location of unit
+        """
+        data=api_handler.get_iot_data()
+        return Response(data)
+
 class DemoGetETA(APIView):
     def get(self, request, job_id):
         """

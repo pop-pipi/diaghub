@@ -14,6 +14,19 @@ def dashboard(request):
     }
     return render(request, 'hub/dashboard.html', data)
 
+def diagnostics(request):
+    api_handler.refresh_db()
+    drivers = models.Driver.objects.all()
+    vehicles = models.Vehicle.objects.all()
+    jobs = models.Job.objects.all()
+    data = {
+        'drivers': drivers,
+        'vehicles': vehicles,
+        'jobs': jobs
+    }
+    return render(request, 'hub/diagnostics.html', data)
+
+
 def drivers(request):
     api_handler.refresh_db()
     drivers = models.Driver.objects.all()

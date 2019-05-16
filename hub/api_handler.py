@@ -2,10 +2,41 @@ from . import models
 from . import demo_data
 import json
 import time
+import requests
 import datetime
 
 def get_demo_data():
     return demo_data.get_demo_data()
+
+def get_iot_data():
+    # api-endpoint 
+    URL = "http://40.127.65.180/api/fromTime?startT="+str(1557881400)
+    
+    # sending get request and saving the response as response object 
+    r = requests.get(url = URL) 
+    
+    # extracting data in json format 
+    data = r.json() 
+    
+    
+    # extracting latitude, longitude and formatted address  
+    # of the first matching location 
+    i = len(data['results'])-1
+    latitude = data['results'][i]['GLAT']
+    longitude = data['results'][i]['GLNG']
+    ax = data['results'][i]['AX']
+    ay = data['results'][i]['AY']
+    az = data['results'][i]['AZ']
+
+    json_data = {
+        "lat" : latitude,
+        "lng" : longitude,
+        "ax" : ax,
+        "ay" : ay,
+        "az" : az
+    }
+    
+    return json_data
 
 # Re-runs 3 minute sample data loop, returns updated location in dict
 def simulate_get_driver_demo_location(driver_id):

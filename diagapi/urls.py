@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'^demo-location-update/(?P<driver_id>\d+)/$', views.DemoLocationUpdateView.as_view()),
     url(r'^demo-get-eta/(?P<job_id>\d+)/$', views.DemoGetETA.as_view()),
     url(r'^demo-get-trip/(?P<job_id>\d+)/$', views.DemoGetTrip.as_view()),
+    url(r'^iot-get-location/$', views.IOTLocationUpdateView.as_view()),
 ]

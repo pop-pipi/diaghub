@@ -1,0 +1,46 @@
+{% extends 'hub/base.html' %}
+{% load static %}
+
+{% block main %}
+<div class="container">
+    <div class="row">
+            <div class="card col-4">
+                <div class="card-body">
+                    <h5 class="card-title">Jobs in breach of contract</h5>
+                    <div id="trip-button" class="diagnostic-btn container btn btn-warning">
+                        <div>
+                            <p id="trip-shock-level" class="h1">3</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card col-4">
+                <div class="card-body">
+                    <h5 class="card-title">Potential cargo impact</h5>
+                    <div id="trip-button" class="diagnostic-btn container btn btn-danger">
+                        <div>
+                            <p id="trip-shock-level" class="h1">1</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card col-4">
+                <div class="card-body">
+                    <h5 class="card-title">Drivers behind schedule</h5>
+                    <div id="trip-button" class="diagnostic-btn container btn btn-success">
+                        <div>
+                            <p id="trip-shock-level" class="h1">2</p>
+                            <p id="trip-shock-rating">Within Performance Metric</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>  
+<div id="map" class="map-container">
+        test
+</div>
+<script src="{% static 'hub/diagnostic_map.js' %}"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDi35R0_kTAK-ENbDWN23sIYluArooLmDQ&callback=initMap"></script>
+
+{% endblock %}

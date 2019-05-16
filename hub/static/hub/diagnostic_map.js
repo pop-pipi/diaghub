@@ -2,7 +2,13 @@ function initMap() {
     directionsService = new google.maps.DirectionsService();
     directionsDisplay = new google.maps.DirectionsRenderer();
     markers = [];
+    polylines = [];
     drivers = [];
+    driver = {
+        'id':'',
+        'lat':'',
+        'lng':''
+    };
     styledMapType = new google.maps.StyledMapType(
         [
             {
@@ -91,57 +97,15 @@ function initMap() {
     map_infowindow = new google.maps.InfoWindow();
 
     addDriverMarkers();
-    //addIOTMarker();
+    showTrip([1,2,3,4,5]);
 
     setInterval(function() {
         for (i=1; i <= drivers.length; i++){
             updateDriverMarkerLocation(i);
         }
-        updateJobTableETA();
     }, 1000); 
 }
 
-/*
-function addIOTMarker() {
-    var url = "http://127.0.0.1:8000/api/iot-get-location/";
-
-    fetch(url, {
-        method: 'GET',
-        mode: 'no-cors',
-        headers:{
-            'Content-Type': 'application/json',
-            "Accept": 'application/json',
-        }
-    })
-    .then(function (response) {
-        return response.json();
-    })
-    .then(function (data) {
-        var marker = new google.maps.Marker({
-            position: new google.maps.LatLng(data['lat'], data['lng']),
-            map: map,
-            icon: icon,
-            duration: 1000
-        });
-
-        markers.push(marker);
-
-        //extend the bounds to include each marker's position
-        map_bounds.extend(marker.position);
-
-        google.maps.event.addListener(marker, 'click', (function(marker) {
-            var description = "IOT";
-            return function() {
-                map_infowindow.setContent(description);
-                map_infowindow.open(map, marker);
-            }
-        })(marker));
-    })
-    .catch(function (err) {
-        console.log(err);
-    })
-}
-*/
 function addDriverMarkers(){
     var url = "http://127.0.0.1:8000/api/drivers";
 
@@ -202,40 +166,20 @@ function addDriverMarkers(){
     })
 }
 
-function showRoute(job_id) {
-    var url = "http://127.0.0.1:8000/api/jobs/?id="+job_id;
+// Sets the map on all markers in the array.
+function setMapOnAll(map) {
+    for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(map);
+    }
+}
 
-    fetch(url, {
-        method: 'GET',
-        mode: 'no-cors',
-        headers:{
-            'Content-Type': 'application/json',
-            "Accept": 'application/json',
-        }
-    })
-    .then(function (response) {
-        return response.json();
-    })
-    .then(function (data) {
-        var jsondata = data['results'][0];
-        var driver_id = Number(jsondata['driver']['id']);
-        var start = new google.maps.LatLng(markers[driver_id-1].getPosition().lat(), markers[driver_id-1].getPosition().lng());
-        var end = new google.maps.LatLng(jsondata['end_lat'], jsondata['end_lng']);
-        var request = {
-        origin: start,
-        destination: end,
-        travelMode: 'DRIVING'
-        };
-        directionsService.route(request, function(result, status) {
-        if (status == 'OK') {
-            directionsDisplay.setOptions({suppressMarkers: true});
-            directionsDisplay.setDirections(result);
-        }
-        });
-    })
-    .catch(function (err) {
-        console.log(err);
-    })
+function clearMarkers() {
+    setMapOnAll(null);
+}
+
+function deleteMarkers() {
+    clearMarkers();
+    markers = [];
 }
 
 function updateDriverMarkerLocation(driver_id) {
@@ -260,16 +204,81 @@ function updateDriverMarkerLocation(driver_id) {
     })
 }
 
-function updateJobTableETA(){
-    $('#active-jobs tr').find("a")
-}
+function showTrip(job_ids){
 
-function displayTripData(data, driver_id){
-    document.getElementById("active-display-data").innerHTML = data['lat'];
-}
+    for (i=0;i<polylines.length;i++) {
+        polylines[i].setMap(null);
+    }
+    polylines=[];
 
-$('#active-jobs tr').on('click', function () {
-    var job_id = $(this).find("a").attr("href");
-    showRoute(job_id);
-    setTimeout(topFunction, 150); 
-});
+    for (i=0;i<job_ids.length;i++) {
+        var url = "http://127.0.0.1:8000/api/demo-get-trip/"+job_ids[i];
+
+        fetch(url, {
+            method: 'GET',
+            mode: 'no-cors',
+            headers:{
+                'Content-Type': 'application/json',
+                "Accept": 'application/json',
+            }
+        })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+
+            var steps = data[0].legs[0].steps;
+            var polyline = new google.maps.Polyline({
+                path: [],
+                strokeWeight: 3
+            });
+            for (i=0;i<steps.length;i++) {
+                var line_colour;
+                switch(steps[i].shock_value) {
+
+                    case 1:
+                        line_colour = '#FF0000';
+                        break;
+                    case 2:
+                        line_colour = '#a02020';
+                        break;
+                    case 3:
+                        line_colour = '#eab146';
+                        break;
+                    case 4:
+                        line_colour = '#3ea542';
+                        break;
+                    default:
+                        line_colour = '#3ea542';
+                }
+                polyline.setOptions({strokeColor: line_colour});
+                var nextset = steps[i].polyline.points;
+                var nextlatlngset = google.maps.geometry.encoding.decodePath(nextset);
+                for (j=0;j<nextlatlngset.length;j++) {
+                    polyline.getPath().push(nextlatlngset[j]);
+                }
+                if(i+1==steps.length) {
+                    polylines.push(polyline);
+                    break;
+                }
+                if(steps[i].shock_value!=steps[i+1].shock_value){
+                    polylines.push(polyline);
+                    polyline = new google.maps.Polyline({
+                        path: [],
+                        strokeWeight: 3
+                    });
+                }
+            }
+
+            for (i=0;i<polylines.length;i++) {
+                    polylines[i].setMap(map);
+                    console.log("")
+            }
+            
+
+        })
+        .catch(function (err) {
+            console.log(err);
+        })
+    }
+}
