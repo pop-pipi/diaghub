@@ -1,0 +1,118 @@
+{% extends 'hub/base.html' %}
+{% load static %}
+
+{% block main %}
+<div class="container">
+    <div class="row">
+
+        <div id="active-display" class="container">
+            <p id="active-display-data"></p>
+            <h2 id="job-title-id">JOB ID: </h2>
+            <div class="row">
+                <div id="job-tables" class="col-3">
+                    <p>Job Details</p>
+                    <table id="job-details" class="table table-striped table-bordered table-sm">
+                        <tbody>
+                            <tr>
+                                <td scope="row">Start Date</td>
+                                <td id="job-table-start-time">null null null null</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">ETA</td>
+                                <td id="job-table-eta">null</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">Contract End Date</td>
+                                <td id="job-table-contract-end-date">null</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">Driver ID</td>
+                                <td id="job-table-driver-id">null</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table id="vehicle-details" class="table table-striped table-bordered table-sm">
+                        <tbody>
+                            <tr>
+                                <td scope="row">Vehicle</td>
+                                <td id="vehicle-table-vehicle">null null null null</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">Registration</td>
+                                <td id="vehicle-table-registration">null</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">Class</td>
+                                <td id="vehicle-table-class">null</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">Capacity</td>
+                                <td id="vehicle-table-capacity">null</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="cargo-tables" class="col-3">
+                    <p>Cargo Details</p>
+                    <table id="cargo-details" class="table table-striped table-bordered table-sm">
+                        <tbody>
+                            <tr>
+                                <td scope="row">Description</td>
+                                <td id="cargo-table-description">null null null null</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">Fragility</td>
+                                <td id="cargo-table-fragility">null</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">Weight</td>
+                                <td id="cargo-table-weight">null</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="h4">Trip Quality</p>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Shock Level</h5>
+                            <div class="container btn btn-warning">
+                                <p class="h5 class-text">General Shock</p>
+                                <p class="h6">100Hz-250Hz</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="map" class="col-6 border">
+                    test
+                </div>
+            </div>
+            <div class="line"></div>
+        </div>
+
+        <div id="jobs-list" class="container">
+                <p class="h5">Active Jobs</p>
+                <table id="active-jobs-table" class="table table-striped table-bordered table-sm">
+                    <thead>
+                        <tr>
+                            <th>Job ID</th>
+                            <th>Driver ID</th>
+                            <th>Status</th>
+                            <th>ETA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for job in jobs %}
+                        <tr>
+                            <td><a href="{{ job.id }}"></a>{{ job.id }}</td>
+                            <td><a href="{{ driver.id }}"></a>{{ job.driver_id }}</td>
+                            <td id="table-job-status">{{ job.status }}</td>
+                            <td id="table-job-eta">{{ job.eTA }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+    </div>
+</div>  
+<script src="{% static 'hub/job_map.js' %}"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDi35R0_kTAK-ENbDWN23sIYluArooLmDQ&callback=initMap"></script>
+{% endblock %}

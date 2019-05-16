@@ -1,14 +1,15 @@
 from hub.models import Driver, Job
 from rest_framework import serializers
 
-
 class DriverSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Driver
-        fields = ('lat','lng')
+        fields = ('id','lat','lng')
 
 
 class JobSerializer(serializers.HyperlinkedModelSerializer):
+    driver = DriverSerializer(required=False)
+    
     class Meta:
         model = Job
         fields = ('origin_lat', 'origin_lng','end_lat','end_lng','status','eTA','driver')

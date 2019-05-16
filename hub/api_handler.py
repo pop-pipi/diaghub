@@ -24,29 +24,32 @@ def simulate_get_driver_demo_location(driver_id):
         sim_end_lat=-37.8056013
         sim_end_lng=144.9589849
 
-    if (driver_id=='2'):
+    elif (driver_id=='2'):
         sim_start_lat=jsondata['drivers'][1]['lat']
         sim_start_lng=jsondata['drivers'][1]['lng']
         sim_end_lat=-37.7521037
         sim_end_lng=144.936368
 
-    if (driver_id=='3'):
+    elif (driver_id=='3'):
         sim_start_lat=jsondata['drivers'][2]['lat']
         sim_start_lng=jsondata['drivers'][2]['lng']
         sim_end_lat=-37.7177046
         sim_end_lng=144.9480767
 
-    if (driver_id=='4'):
+    elif (driver_id=='4'):
         sim_start_lat=jsondata['drivers'][3]['lat']
         sim_start_lng=jsondata['drivers'][3]['lng']
         sim_end_lat=-37.7670368
         sim_end_lng=144.9620889
 
-    if (driver_id=='5'):
+    elif (driver_id=='5'):
         sim_start_lat=jsondata['drivers'][4]['lat']
         sim_start_lng=jsondata['drivers'][4]['lng']
         sim_end_lat=-37.7628538
         sim_end_lng=144.8309902
+
+    else:
+        return
 
     # get new lat/lng by rate of change of lat/lng per second
     new_lat=(((sim_end_lat-sim_start_lat)/180)*time_simulation)+sim_start_lat
@@ -55,6 +58,8 @@ def simulate_get_driver_demo_location(driver_id):
     json_data = {
         "lat":format(new_lat, '.6f'),
         "lng":format(new_lng, '.6f')
+        #"lat":new_lat,
+        #"lng":new_lng
     }
     return json_data
         

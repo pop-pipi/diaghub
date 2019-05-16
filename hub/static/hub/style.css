@@ -83,7 +83,7 @@ a:focus {
     position: fixed;
     height: 93vh;
     z-index: 999;
-    top: 10vh;
+    top: 7.6vh;
     background: #B12028;
     color: #fff;
     transition: all 0.3s;
@@ -163,15 +163,23 @@ a.article:hover {
 }
 
 /* ---------------------------------------------------
+    JOBS.HTML STYLE
+----------------------------------------------------- */
+#jobs-list {
+    padding-top: 8px;
+}
+
+
+/* ---------------------------------------------------
     CONTENT STYLE
 ----------------------------------------------------- */
 
 #content {
     width: calc(100% - 250px);
-    min-height: 100vh;
+    /*min-height: 100vh;*/
     transition: all 0.3s;
     position: absolute;
-    top: 10vh;
+    top: 7.6vh;
     right: 0;
 }
 
