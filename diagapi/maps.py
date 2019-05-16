@@ -8,5 +8,6 @@ def get_ETA(origin, destination):
     return distance['rows'][0]['elements'][0]['duration_in_traffic']
 
 def get_Route(origin, destination):
-    route = gmaps.distance_matrix(origin,destination,mode="driving",departure_time=datetime.now())
+    route = gmaps.directions(origin,destination,mode="driving",departure_time=datetime.now())
+
     return route

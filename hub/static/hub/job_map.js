@@ -2,6 +2,7 @@ function initMap() {
     directionsService = new google.maps.DirectionsService();
     directionsDisplay = new google.maps.DirectionsRenderer();
     markers = [];
+    polylines = [];
     driver = {
         'id':'',
         'lat':'',
@@ -94,7 +95,9 @@ function initMap() {
     map_bounds = new google.maps.LatLngBounds();
     map_infowindow = new google.maps.InfoWindow();
 
-    addDriverMarkerShowRoute(1,1);
+    addDriverMarkerShowRoute(1,1)
+    updateDetails(1,1);
+    showTrip(1);
 
     setInterval(function() {
         updateDriverMarkerLocation();
@@ -251,9 +254,42 @@ function updateDetails(driver_id, job_id){
     .then(function (data) {
         var job = data['results'][0];
 
-        $("#job-table-start-time").html("Job "+job_id);
         updateJobETA(job_id);
-        $("#job-table-contract-end-date").html("Job "+job_id);
+        $("#job-table-contract-end-date").html(job['end_date']);
+        updateVehicleDetails(driver_id);
+        updateCargoDetails(driver_id);
+
+        switch(job['max_shock_value']) {
+
+            case 1:
+                btn_class = 'container btn btn-outline-danger';
+                shock_level = "Extreme Shock";
+                shock_rating = ">1000 Hz";
+                break;
+            case 2:
+                btn_class = 'container btn btn-danger';
+                shock_level = "High Impact Shock";
+                shock_rating = "<250 Hz";
+                break;
+            case 3:
+                btn_class = 'container btn btn-warning';
+                shock_level = "General Shock";
+                shock_rating = "<100Hz";
+                break;
+            case 4:
+                btn_class = 'container btn btn-success';
+                shock_level = "General Vibration";
+                shock_rating = "~5 Hz";
+                break;
+            default:
+                btn_class = 'container btn btn-success';
+                shock_level = "General Vibration";
+                shock_rating = "~5 Hz";
+        }
+
+        $("#trip-button").attr("class", btn_class);
+        $("#trip-shock-level").html(shock_level);
+        $("#trip-shock-rating").html(shock_rating);
 
 
     })
@@ -287,14 +323,143 @@ function updateJobETA(job_id){
     })
 }
 
-function updateVehicleDetails(vehicle_id){
+function updateVehicleDetails(driver_id){
+    var url = "http://127.0.0.1:8000/api/vehicles/?id="+driver_id;
 
+    fetch(url, {
+        method: 'GET',
+        mode: 'no-cors',
+        headers:{
+            'Content-Type': 'application/json',
+            "Accept": 'application/json',
+        }
+    })
+    .then(function (response) {
+        return response.json();
+    })
+    .then(function (data) {
+        var vehicle = data['results'][0];
+
+        $("#vehicle-table-registration").html(vehicle['registration_no']);
+        $("#vehicle-table-class").html(vehicle['vehicle_class']);
+        $("#vehicle-table-capacity").html(vehicle['capacity']+" kg");
+
+    })
+    .catch(function (err) {
+        console.log(err);
+    })
+}
+
+function showTrip(job_id){
+
+    for (i=0;i<polylines.length;i++) {
+        polylines[i].setMap(null);
+    }
+    polylines=[];
+
+
+    var url = "http://127.0.0.1:8000/api/demo-get-trip/"+job_id;
+
+    fetch(url, {
+        method: 'GET',
+        mode: 'no-cors',
+        headers:{
+            'Content-Type': 'application/json',
+            "Accept": 'application/json',
+        }
+    })
+    .then(function (response) {
+        return response.json();
+    })
+    .then(function (data) {
+
+        var steps = data[0].legs[0].steps;
+        var polyline = new google.maps.Polyline({
+            path: [],
+            strokeWeight: 3
+        });
+        for (i=0;i<steps.length;i++) {
+            var line_colour;
+            switch(steps[i].shock_value) {
+
+                case 1:
+                    line_colour = '#FF0000';
+                    break;
+                case 2:
+                    line_colour = '#a02020';
+                    break;
+                case 3:
+                    line_colour = '#eab146';
+                    break;
+                case 4:
+                    line_colour = '#3ea542';
+                    break;
+                default:
+                    line_colour = '#3ea542';
+            }
+            polyline.setOptions({strokeColor: line_colour});
+            var nextset = steps[i].polyline.points;
+            var nextlatlngset = google.maps.geometry.encoding.decodePath(nextset);
+            for (j=0;j<nextlatlngset.length;j++) {
+                polyline.getPath().push(nextlatlngset[j]);
+            }
+            if(i+1==steps.length) {
+                polylines.push(polyline);
+                break;
+            }
+            if(steps[i].shock_value!=steps[i+1].shock_value){
+                polylines.push(polyline);
+                polyline = new google.maps.Polyline({
+                    path: [],
+                    strokeWeight: 3
+                });
+            }
+        }
+
+        for (i=0;i<polylines.length;i++) {
+                polylines[i].setMap(map);
+                console.log("")
+        }
+        
+
+    })
+    .catch(function (err) {
+        console.log(err);
+    })
+}
+
+function updateCargoDetails(driver_id){
+    var url = "http://127.0.0.1:8000/api/cargo/?id="+driver_id;
+
+    fetch(url, {
+        method: 'GET',
+        mode: 'no-cors',
+        headers:{
+            'Content-Type': 'application/json',
+            "Accept": 'application/json',
+        }
+    })
+    .then(function (response) {
+        return response.json();
+    })
+    .then(function (data) {
+        var cargo = data['results'][0];
+
+        $("#cargo-table-description").html(cargo['description']);
+        $("#cargo-table-fragility").html(cargo['fragility']);
+        $("#cargo-table-weight").html(cargo['weight']+" kg");
+
+    })
+    .catch(function (err) {
+        console.log(err);
+    })
 }
 
 $('#active-jobs-table tr').on('click', function () {
     var job_id = $(this).find("a").attr("href");
     var driver_id = $(this).find("a:nth-child(1)").attr("href");
     addDriverMarkerShowRoute(driver_id, job_id)
+    showTrip(job_id);
     setTimeout(topFunction, 150); 
     updateDetails(driver_id, job_id);
 });

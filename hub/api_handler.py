@@ -69,6 +69,7 @@ def refresh_db():
     drivers = models.Driver.objects.all()
     jobs = models.Job.objects.all()
     vehicles = models.Vehicle.objects.all()
+    cargo = models.Cargo.objects.all()
     
     for driver in jsondata['drivers']:
         if driver['id'] not in [i.id for i in drivers]:
@@ -79,9 +80,13 @@ def refresh_db():
             models.Job.objects.create(id=job['id'], driver=models.Driver.objects.get(pk=job['driver_id']),
                 status=job['status'], eTA=datetime.datetime.fromtimestamp(int(job['ETA'])).isoformat(), 
                 origin_lat=job['origin_lat'], origin_lng=job['origin_lng'], 
-                end_lat=job['end_lat'], end_lng=job['end_lng'])
+                end_lat=job['end_lat'], end_lng=job['end_lng'], end_date=datetime.datetime.fromtimestamp(int(job['end_date'])).isoformat())
 
     for vehicle in jsondata['vehicles']:
         if vehicle['id'] not in [i.id for i in vehicles]:
             models.Vehicle.objects.create(id=vehicle['id'], driver=models.Driver.objects.get(pk=vehicle['driver_id']),
-                vehicle_class=vehicle['vehicle_class'], capacity=vehicle['capacity'])
+                vehicle_class=vehicle['vehicle_class'], capacity=vehicle['capacity'], registration_no=vehicle['registration_no'])
+
+    for obj in jsondata['cargo']:
+        if obj['id'] not in [i.id for i in cargo]:
+            models.Cargo.objects.create(id=obj['id'], description=obj['description'],fragility=obj['fragility'], weight=obj['weight'])

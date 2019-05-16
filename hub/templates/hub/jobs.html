@@ -14,10 +14,6 @@
                     <table id="job-details" class="table table-striped table-bordered table-sm">
                         <tbody>
                             <tr>
-                                <td scope="row">Start Date</td>
-                                <td id="job-table-start-time">null null null null</td>
-                            </tr>
-                            <tr>
                                 <td scope="row">ETA</td>
                                 <td id="job-table-eta">null</td>
                             </tr>
@@ -33,10 +29,6 @@
                     </table>
                     <table id="vehicle-details" class="table table-striped table-bordered table-sm">
                         <tbody>
-                            <tr>
-                                <td scope="row">Vehicle</td>
-                                <td id="vehicle-table-vehicle">null null null null</td>
-                            </tr>
                             <tr>
                                 <td scope="row">Registration</td>
                                 <td id="vehicle-table-registration">null</td>
@@ -74,10 +66,10 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Shock Level</h5>
-                            <div class="container btn btn-warning">
+                            <div id="trip-button" class="container btn btn-warning">
                                 <div>
-                                    <p class="text-wrap">General Shock</p>
-                                    <p class="text-muted">100Hz-250Hz</p>
+                                    <p id="trip-shock-level" class="text-wrap">General Shock</p>
+                                    <p id="trip-shock-rating">100Hz-250Hz</p>
                                 </div>
                             </div>
                         </div>

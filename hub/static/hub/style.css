@@ -17,6 +17,10 @@ p {
     color: rgb(10, 10, 10);
 }
 
+.title-offset {
+    color:  #B12028;
+}
+
 .btn-warning p {
     font-size: .9em;
     font-weight: 500;
@@ -174,6 +178,10 @@ a.article:hover {
 ----------------------------------------------------- */
 #jobs-list {
     padding-top: 8px;
+}
+
+#trip-shock-rating{
+    color: rgb(255,255,255);
 }
 
 

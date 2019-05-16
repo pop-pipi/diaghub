@@ -39,6 +39,7 @@ def get_demo_data():
                 "driver_id" : 1,
                 "status" : "On Route",
                 "ETA" : "1557452245",
+                "end_date" : "1558105200",
                 "origin_lat" : -37.836636,
                 "origin_lng" : 144.884661,
                 "end_lat" : -37.740947,
@@ -49,6 +50,7 @@ def get_demo_data():
                 "driver_id" : 2,
                 "status" : "On Route",
                 "ETA" : "1557412245",
+                "end_date" : "1558105200",
                 "origin_lat" : -37.836636,
                 "origin_lng" : 144.884661,
                 "end_lat" : -37.726047,
@@ -59,6 +61,7 @@ def get_demo_data():
                 "driver_id" : 3,
                 "status" : "On Route",
                 "ETA" : "1557452845",
+                "end_date" : "1558105200",
                 "origin_lat" : -37.836636,
                 "origin_lng" : 144.884661,
                 "end_lat" : -37.709429,
@@ -69,6 +72,7 @@ def get_demo_data():
                 "driver_id" : 4,
                 "status" : "On Route",
                 "ETA" : "1557422245",
+                "end_date" : "1558105200",
                 "origin_lat" : -37.836636,
                 "origin_lng" : 144.884661,
                 "end_lat" : -37.799743,
@@ -79,6 +83,7 @@ def get_demo_data():
                 "driver_id" : 5,
                 "status" : "Pick-up",
                 "ETA" : "1557482245",
+                "end_date" : "1558105200",
                 "origin_lat" : -37.836636,
                 "origin_lng" : 144.884661,
                 "end_lat" : -37.853362,
@@ -121,6 +126,38 @@ def get_demo_data():
                 "vehicle_class" : "Car",
                 "capacity" : 3000
             }
+        ],
+        "cargo" : [
+            {
+                "id" : 1,
+                "description" : "Dapagliflozin - Drug",
+                "fragility" : 4,
+                "weight" : 100
+            },
+            {
+                "id" : 2,
+                "description" : "Seagate Drives - Tech",
+                "fragility" : 1,
+                "weight" : 4000
+            },
+            {
+                "id" : 3,
+                "description" : "Aluminium tubing",
+                "fragility" : 3,
+                "weight" : 4000
+            },
+            {
+                "id" : 4,
+                "description" : "Tomatoes - Food",
+                "fragility" : 2,
+                "weight" : 2000
+            },
+            {
+                "id" : 5,
+                "description" : "Stawberries - Food",
+                "fragility" : 2,
+                "weight" : 2000
+            }            
         ]
     }
     """
