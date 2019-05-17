@@ -1,0 +1,10 @@
+{% extends 'diagapp/base.html' %}
+{% load static %}
+
+{% block main %}
+<div id="map" class="map-container">
+    test
+</div>
+<script src="{% static 'diagapp/app_map.js' %}"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDi35R0_kTAK-ENbDWN23sIYluArooLmDQ&callback=initMap"></script>
+{% endblock %}

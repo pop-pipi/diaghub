@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'hub',
     'diagapi',
     'rest_framework',
+    'diagapp',
 ]
 
 MIDDLEWARE = [

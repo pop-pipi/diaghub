@@ -6,6 +6,8 @@ from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework.views import APIView
 from . import maps
+import time
+import datetime
 
 class DriverList(generics.ListAPIView):
     """
@@ -64,6 +66,8 @@ class DemoLocationUpdateView(APIView):
         """
         API endpoint that returns updated demo location of driver
         """
+        if(driver_id==6):
+            return Response(data=api_handler.get_iot_data())
         serializer_class = LocationSerializer(data=api_handler.simulate_get_driver_demo_location(driver_id))
         serializer_class.is_valid(True)
         return Response(data=serializer_class.data)
