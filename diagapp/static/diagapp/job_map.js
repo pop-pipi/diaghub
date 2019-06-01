@@ -95,22 +95,20 @@ function initMap() {
     map_bounds = new google.maps.LatLngBounds();
     map_infowindow = new google.maps.InfoWindow();
 
-    driver_id = 2;
-    job_id = 2;
-
-    addDriverMarkerShowRoute()
-
+    addDriverMarkerShowRoute(1,1)
+    updateDetails(1,1);
+    showTrip(1);
 
     setInterval(function() {
         updateDriverMarkerLocation();
     }, 1000); 
 }
 
-function addDriverMarkerShowRoute(){
+function addDriverMarkerShowRoute(driver_id,job_id){
     deleteMarkers();
 
     driver['id'] = driver_id;
-    var url = "http://127.0.0.1:8000/api/demo-get-trip/"+job_id;
+    var url = "http://127.0.0.1:8000/api/demo-location-update/"+driver_id;
 
     fetch(url, {
         method: 'GET',
@@ -154,8 +152,6 @@ function addDriverMarkerShowRoute(){
 
         showRoute(job_id);
 
-        map.zoom = 8;
-        map.center = driver['lat'], driver['lng'];
         map.mapTypes.set('styled_map', styledMapType);
         map.setMapTypeId('styled_map');
     })
@@ -216,8 +212,7 @@ function deleteMarkers() {
 }
 
 function updateDriverMarkerLocation() {
-    //var url = "http://127.0.0.1:8000/api/iot-get-location/";
-    var url = "http://127.0.0.1:8000/api/demo-location-update/"+driver_id;
+    var url = "http://127.0.0.1:8000/api/demo-location-update/"+driver['id'];
 
     fetch(url, {
         method: 'GET',

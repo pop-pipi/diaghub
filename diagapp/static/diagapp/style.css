@@ -2,6 +2,10 @@
     DEMO STYLE
 */
 
+#map * {
+    overflow:visible;
+}
+
 @import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
 body {
     font-family: 'arial_mt_stdlight', sans-serif;
@@ -203,12 +207,21 @@ a.article:hover {
     width: 100%;
 }
 
+.row {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.details {
+    padding-left: 10px;
+    padding-right: 10px;
+}
 /* ---------------------------------------------------
     MAPS STYLE
 ----------------------------------------------------- */
 
 .map-container {
-    height: 480px;
+    height: 300px;
     width: 100%;
 }
 
